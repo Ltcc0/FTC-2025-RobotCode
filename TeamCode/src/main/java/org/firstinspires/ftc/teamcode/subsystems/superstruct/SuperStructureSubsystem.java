@@ -33,35 +33,36 @@ public class SuperStructureSubsystem extends SubsystemBase {
                 2000,
                 0,
                 0.8,
-                3.5,
-                0.1);
+                5,
+                0.2);
         this.elevator = new LinearMotion(
                 new DcMotor[]{hardwareMap.get(DcMotor.class, "elevator1"), hardwareMap.get(DcMotor.class, "elevator2")},
                 new boolean[] {true, false},
                 hardwareMap.get(DcMotor.class, "elevator2"),
                 false,
                 700,
-                0.05,
-                0.5,
+                0.1,
+                0.3,
                 2.5,
                 0.05);
         final ProfiledMechanism intakeBase = new ProfiledMechanism(
                 new ServoEx(hardwareMap.get(Servo.class, "intakeBase")),
-                0.8,
+                0.6,
                 0.5);
         final ProfiledMechanism intakeFlip = new ProfiledMechanism(
                 new ServoEx(hardwareMap.get(Servo.class, "intakeFlip")),
-                0.5,
+                0.4,
                 0.5);
         final ProfiledMechanism armFlip = new ProfiledMechanism(
                 new ServoEx(hardwareMap.get(Servo.class, "armFlip")),
-                0.8,
+                0.6,
                 0.05);
         this.superStructure = new ProfiledMechanismSet(
                 new ProfiledMechanism[]{
-                        new ProfiledMechanism(extend, 1.2, 0),
+                        new ProfiledMechanism(extend, 1.5, 0),
                         intakeBase, intakeFlip,
-                        new ProfiledMechanism(elevator, 0.8, 0),
+                        // new ProfiledMechanism(elevator, 0.8, 0),
+                        new ProfiledMechanism(setPoint -> {}, 0.8, 0),
                         armFlip
                 },
                 SuperStructurePose.HOLD.positions
@@ -98,11 +99,11 @@ public class SuperStructureSubsystem extends SubsystemBase {
     public void periodic() {
         superStructure.update();
         extend.periodic();
-        elevator.periodic();
+        // elevator.periodic();
 
-        intakeClaw.setPosition(intakeClawClosed ? 0.8 : 0);
-        armClaw.setPosition(armClawClosed ? 0.8 : 0);
-        intakeRotate.setPosition(0.5 + intakeRotAngle * 0.5);
+        intakeClaw.setPosition(intakeClawClosed ? 1 : 0);
+        armClaw.setPosition(armClawClosed ? 1 : 0);
+        intakeRotate.setPosition(0.55 + intakeRotAngle * 0.5);
     }
 
     public boolean superStructAtReference() {
@@ -124,7 +125,7 @@ public class SuperStructureSubsystem extends SubsystemBase {
     public Command closeIntakeClaw() {
         return new ConditionalCommand(
                 new InstantCommand(() -> setIntakeClaw(true))
-                        .andThen(new WaitCommand(500)),
+                        .andThen(new WaitCommand(250)),
                 new InstantCommand(),
                 () -> !intakeClawClosed);
     }
@@ -132,7 +133,7 @@ public class SuperStructureSubsystem extends SubsystemBase {
     public Command openIntakeClaw() {
         return new ConditionalCommand(
                 new InstantCommand(() -> setIntakeClaw(false))
-                        .andThen(new WaitCommand(500)),
+                        .andThen(new WaitCommand(250)),
                 new InstantCommand(),
                 () -> intakeClawClosed);
     }
@@ -140,15 +141,15 @@ public class SuperStructureSubsystem extends SubsystemBase {
     public Command closeArmClaw() {
         return new ConditionalCommand(
                 new InstantCommand(() -> setArmClaw(true))
-                        .andThen(new WaitCommand(500)),
+                        .andThen(new WaitCommand(250)),
                 new InstantCommand(),
                 () -> !armClawClosed);
     }
 
     public Command openArmClaw() {
         return new ConditionalCommand(
-                new InstantCommand(() -> setArmClaw(true))
-                        .andThen(new WaitCommand(500)),
+                new InstantCommand(() -> setArmClaw(false))
+                        .andThen(new WaitCommand(250)),
                 new InstantCommand(),
                 () -> armClawClosed);
     }

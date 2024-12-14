@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems.superstruct;
 
 import com.arcrobotics.ftclib.command.Subsystem;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.constants.SystemConstants;
 import org.firstinspires.ftc.teamcode.utils.SuperStructure.SimpleMechanism;
@@ -47,8 +48,11 @@ public class LinearMotion implements SimpleMechanism, Subsystem {
         this.kV = kV;
         this.kS = kS;
 
-        for (DcMotor motor:motors)
+        for (DcMotor motor:motors) {
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            motor.setDirection(DcMotorSimple.Direction.FORWARD);
+        }
+        encoder.setDirection(DcMotorSimple.Direction.FORWARD);
 
         previousSetPoint = setPoint = 0; // robot must be in starting configuration
     }
@@ -56,8 +60,8 @@ public class LinearMotion implements SimpleMechanism, Subsystem {
     private double previousSetPoint;
     @Override
     public void periodic() {
-        double currentPosition = encoder.getCurrentPosition() / maximumExtendingLength;
-        double desiredVelocity = (setPoint - previousSetPoint) / SystemConstants.ROBOT_UPDATE_RATE_HZ;
+        double currentPosition = encoder.getCurrentPosition() * (encoderReversed ? -1:1) / maximumExtendingLength;
+        double desiredVelocity = (setPoint - previousSetPoint) * SystemConstants.ROBOT_UPDATE_RATE_HZ;
         previousSetPoint = setPoint;
         double feedForwardPower = desiredVelocity * kV
                 + Math.signum(desiredVelocity) * kS
@@ -66,6 +70,13 @@ public class LinearMotion implements SimpleMechanism, Subsystem {
 
         for (int i = 0; i < motors.length; i++)
             motors[i].setPower((feedForwardPower + feedBackPower) * (motorsReversed[i] ? -1:1));
+
+        SystemConstants.telemetry.addLine("<-- Linear Motion -->");
+        SystemConstants.telemetry.addData("currentPosition", currentPosition);
+        SystemConstants.telemetry.addData("desiredVelocity", desiredVelocity);
+        SystemConstants.telemetry.addData("setPoint", setPoint);
+        SystemConstants.telemetry.addData("FFPower", feedForwardPower);
+        SystemConstants.telemetry.addData("FBPower", feedBackPower);
     }
 
     @Override

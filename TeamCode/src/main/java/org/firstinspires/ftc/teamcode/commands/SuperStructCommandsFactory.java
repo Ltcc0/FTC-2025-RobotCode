@@ -28,9 +28,9 @@ public class SuperStructCommandsFactory {
 
         sequence.addCommands(new InstantCommand(() -> {
             superStructureSubsystem.setIntakeRotate(0);
-            sampleInArm = true;
+            sampleInArm = false;
+            superStructureSubsystem.setIntakeClaw(false);
         }));
-                sequence.addCommands(superStructureSubsystem.openArmClaw().alongWith(superStructureSubsystem.openIntakeClaw()));
         sequence.addCommands(superStructureSubsystem.moveToPose(SuperStructurePose.PREPARE_TO_INTAKE));
 
         AtomicReference<Double> extendPosition = new AtomicReference<>(0.5);
@@ -75,6 +75,8 @@ public class SuperStructCommandsFactory {
         sequence.addCommands(superStructureSubsystem.openIntakeClaw());
 
         sequence.addCommands(new InstantCommand(() -> sampleInArm = true));
+        sequence.addCommands(superStructureSubsystem.moveToPose(SuperStructurePose.PREPARE_TO_PASS)
+                .alongWith(superStructureSubsystem.openIntakeClaw()));
         sequence.addCommands(superStructureSubsystem.moveToPose(SuperStructurePose.HOLD));
 
         return sequence;
