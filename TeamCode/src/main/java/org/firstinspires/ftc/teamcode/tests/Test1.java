@@ -47,10 +47,15 @@ public class Test1 extends OpMode {
 
     @Override
     public void loop() {
-//        extend.setPower(gamepad1.left_stick_y);
-//
-//        elevator1.setPower(gamepad1.right_stick_y);
-//        elevator2.setPower(gamepad1.right_stick_y);
+        extend.setPower(gamepad2.left_stick_y);
+
+        elevator1.setPower(gamepad2.right_stick_y);
+        elevator2.setPower(gamepad2.right_stick_y);
+
+        telemetry.addData("elevator 1 position", elevator1.getCurrentPosition());
+        telemetry.addData("elevator 2 position", elevator2.getCurrentPosition());
+
+        telemetry.addData("extend position", extend.getCurrentPosition());
 
         double intakeBasePosition = 0.5 + 0.5 * gamepad1.left_stick_y;
         intakeBase.setPosition(intakeBasePosition);
