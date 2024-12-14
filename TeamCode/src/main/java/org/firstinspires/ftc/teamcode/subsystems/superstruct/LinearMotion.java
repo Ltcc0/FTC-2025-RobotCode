@@ -83,4 +83,8 @@ public class LinearMotion implements SimpleMechanism, Subsystem {
     public void goToPosition(double setPoint) {
         this.setPoint = setPoint;
     }
+
+    public double getCurrentSetPoint() {
+        return this.setPoint;
+    }
 }

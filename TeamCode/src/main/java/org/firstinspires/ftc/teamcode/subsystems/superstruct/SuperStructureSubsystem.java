@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.utils.SuperStructure.ServoEx;
 import java.util.function.Supplier;
 
 public class SuperStructureSubsystem extends SubsystemBase {
-    private final LinearMotion extend, elevator;
+    public final LinearMotion extend, elevator;
     private final ProfiledMechanismSet superStructure;
     private final Servo intakeRotate, intakeClaw, armClaw;
     private boolean intakeClawClosed, armClawClosed;

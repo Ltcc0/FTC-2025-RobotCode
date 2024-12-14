@@ -54,6 +54,12 @@ public class SuperStructCommandsFactory {
 
         sequence.addCommands(new InstantCommand(() -> sampleInArm = false));
         sequence.addCommands(superStructureSubsystem.closeIntakeClaw());
+        sequence.addCommands(new ConditionalCommand(
+                superStructureSubsystem.moveToPose(SuperStructurePose.INTAKE_COMPLETE)
+                        .beforeStarting(() -> superStructureSubsystem.setIntakeRotate(1)),
+                new InstantCommand(),
+                () -> superStructureSubsystem.extend.getCurrentSetPoint() > 0.1
+        ));
         sequence.addCommands(superStructureSubsystem.moveToPose(SuperStructurePose.HOLD)
                 .beforeStarting(() -> superStructureSubsystem.setIntakeRotate(0)));
         return sequence;
@@ -65,9 +71,7 @@ public class SuperStructCommandsFactory {
 
         sequence.addCommands(superStructureSubsystem.closeIntakeClaw());
 
-        sequence.addCommands(superStructureSubsystem.moveToPose(SuperStructurePose.PREPARE_TO_PASS)
-                .alongWith(superStructureSubsystem.openArmClaw())
-                .beforeStarting(() -> superStructureSubsystem.setIntakeRotate(0)));
+        sequence.addCommands(holdIntake().alongWith(superStructureSubsystem.openArmClaw()));
 
         sequence.addCommands(superStructureSubsystem.moveToPose(SuperStructurePose.PASS));
 
