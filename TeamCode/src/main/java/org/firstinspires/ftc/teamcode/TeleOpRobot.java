@@ -50,6 +50,21 @@ public class TeleOpRobot extends Robot {
 
         this.pilotGamePad.getGamepadButton(GamepadKeys.Button.START).whenPressed(calibrateOdometry);
 
+        this.copilotGamePad.getGamepadButton(GamepadKeys.Button.A)
+                .whenPressed(robotContainer.superStructCommandsFactory.intakeContinuously(
+                        () -> -copilotGamePad.getLeftY(),
+                        copilotGamePad::getRightX,
+                        copilotGamePad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)::get,
+                        () -> copilotGamePad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5));
+        this.copilotGamePad.getGamepadButton(GamepadKeys.Button.X)
+                .whenPressed(robotContainer.superStructCommandsFactory.holdIntake());
+        this.copilotGamePad.getGamepadButton(GamepadKeys.Button.B)
+                .whenPressed(robotContainer.superStructCommandsFactory.passSampleToUpperArm());
+        this.copilotGamePad.getGamepadButton(GamepadKeys.Button.Y)
+                .whenPressed(robotContainer.superStructCommandsFactory.scoreSample(
+                        () -> copilotGamePad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5));
+
+        // TODO: testing commands, delete them
         this.pilotGamePad.getGamepadButton(GamepadKeys.Button.B).whenHeld(robotContainer.driveSubsystem.followPath(
                 new Pose2d[]{
                         new Pose2d(0, 0, Rotation2d.fromDegrees(45)),

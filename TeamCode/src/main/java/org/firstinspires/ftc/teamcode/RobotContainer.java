@@ -3,9 +3,11 @@ package org.firstinspires.ftc.teamcode;
 import com.arcrobotics.ftclib.command.FunctionalCommand;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.commands.SuperStructCommandsFactory;
 import org.firstinspires.ftc.teamcode.constants.SystemConstants;
 import org.firstinspires.ftc.teamcode.subsystems.drive.MapleOdometerWheelsOdometry;
 import org.firstinspires.ftc.teamcode.subsystems.drive.MecanumDriveSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.superstruct.SuperStructureSubsystem;
 import org.firstinspires.ftc.teamcode.utils.AllianceSide;
 
 import java.io.IOException;
@@ -19,6 +21,8 @@ public final class RobotContainer implements AutoCloseable {
     public final AllianceSide currentSide;
 
     public final MecanumDriveSubsystem driveSubsystem;
+    public final SuperStructureSubsystem superStructureSubsystem;
+    public final SuperStructCommandsFactory superStructCommandsFactory;
 
     public final MapleOdometerWheelsOdometry testOdometry;
 
@@ -39,6 +43,8 @@ public final class RobotContainer implements AutoCloseable {
         ));
 
         this.driveSubsystem = new MecanumDriveSubsystem(hardwareMap, testOdometry);
+        this.superStructureSubsystem = new SuperStructureSubsystem(hardwareMap);
+        this.superStructCommandsFactory = new SuperStructCommandsFactory(superStructureSubsystem);
     }
 
     @Override

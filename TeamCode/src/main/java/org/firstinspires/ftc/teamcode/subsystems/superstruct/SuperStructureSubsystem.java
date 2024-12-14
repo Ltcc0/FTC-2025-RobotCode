@@ -40,7 +40,7 @@ public class SuperStructureSubsystem extends SubsystemBase {
                 new boolean[] {true, false},
                 hardwareMap.get(DcMotor.class, "elevator2"),
                 false,
-                1000,
+                700,
                 0.05,
                 0.5,
                 2.5,
