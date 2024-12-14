@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems.superstruct;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
@@ -13,6 +14,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.utils.SuperStructure.ProfiledMechanism;
 import org.firstinspires.ftc.teamcode.utils.SuperStructure.ProfiledMechanismSet;
 import org.firstinspires.ftc.teamcode.utils.SuperStructure.ServoEx;
+
+import java.util.function.Supplier;
 
 public class SuperStructureSubsystem extends SubsystemBase {
     private final LinearMotion extend, elevator;
@@ -61,7 +64,7 @@ public class SuperStructureSubsystem extends SubsystemBase {
                         new ProfiledMechanism(elevator, 0.8, 0),
                         armFlip
                 },
-                SuperStructureState.HOLD.positions
+                SuperStructurePose.HOLD.positions
         );
 
         this.intakeRotate = hardwareMap.get(Servo.class, "intakeRotate");
@@ -87,7 +90,7 @@ public class SuperStructureSubsystem extends SubsystemBase {
         this.intakeRotAngle = angle;
     }
 
-    public void requestState(SuperStructureState state) {
+    public void requestPose(SuperStructurePose state) {
         superStructure.requestPositions(state.positions);
     }
 
@@ -98,7 +101,7 @@ public class SuperStructureSubsystem extends SubsystemBase {
         elevator.periodic();
 
         intakeClaw.setPosition(intakeClawClosed ? 0.8 : 0);
-        armClaw.setPosition(armClawClosed ? 0.6 : 0);
+        armClaw.setPosition(armClawClosed ? 0.8 : 0);
         intakeRotate.setPosition(0.5 + intakeRotAngle * 0.5);
     }
 
@@ -106,12 +109,16 @@ public class SuperStructureSubsystem extends SubsystemBase {
         return this.superStructure.atReference();
     }
 
-    public Command moveToState(SuperStructureState state) {
+    public Command moveToPose(SuperStructurePose pose) {
         // wait for 100ms for debug
         final Command waitForSuperStructureMovement = new WaitCommand(100)
                 .andThen(new WaitUntilCommand(this::superStructAtReference));
-        return new InstantCommand(() -> requestState(state))
-                .andThen(waitForSuperStructureMovement);
+        return new InstantCommand(() -> requestPose(pose), this)
+                .alongWith(waitForSuperStructureMovement);
+    }
+
+    public Command follow(Supplier<SuperStructurePose> pose) {
+        return new RunCommand(() -> requestPose(pose.get()), this);
     }
 
     public Command closeIntakeClaw() {
