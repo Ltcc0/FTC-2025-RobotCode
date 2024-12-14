@@ -50,7 +50,7 @@ public class Test1 extends OpMode {
         extend.setPower(gamepad2.left_stick_y);
 
         elevator1.setPower(gamepad2.right_stick_y);
-        elevator2.setPower(gamepad2.right_stick_y);
+        // elevator2.setPower(gamepad2.right_stick_y);
 
         telemetry.addData("elevator 1 position", elevator1.getCurrentPosition());
         telemetry.addData("elevator 2 position", elevator2.getCurrentPosition());
