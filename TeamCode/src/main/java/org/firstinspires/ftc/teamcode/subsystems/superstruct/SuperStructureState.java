@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems.superstruct;
 
 import androidx.annotation.NonNull;
 
-import org.firstinspires.ftc.teamcode.utils.SuperStructure.ProfiledSuperStructure;
+import org.firstinspires.ftc.teamcode.utils.SuperStructure.ProfiledMechanismSet;
 
 /**
  * The order is:
@@ -56,7 +56,7 @@ public class SuperStructureState implements Cloneable {
         return state;
     }
 
-    public void feedToSuperStructure(ProfiledSuperStructure superStructure) {
+    public void feedToSuperStructure(ProfiledMechanismSet superStructure) {
         superStructure.requestPositions(positions);
     }
 

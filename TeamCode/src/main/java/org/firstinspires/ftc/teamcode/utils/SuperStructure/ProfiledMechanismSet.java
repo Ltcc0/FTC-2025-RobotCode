@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.utils.SuperStructure;
 
-public class ProfiledSuperStructure {
+public class ProfiledMechanismSet {
     private final ProfiledMechanism[] profiledMechanisms;
 
-    public ProfiledSuperStructure(ProfiledMechanism[] profiledMechanisms, double[] initialPositions) {
+    public ProfiledMechanismSet(ProfiledMechanism[] profiledMechanisms, double[] initialPositions) {
         assert profiledMechanisms.length == initialPositions.length
                 : "Mechanisms and Positions Length Not Match";
         this.profiledMechanisms = profiledMechanisms;

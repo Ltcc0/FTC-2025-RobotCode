@@ -11,12 +11,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.utils.SuperStructure.ProfiledMechanism;
-import org.firstinspires.ftc.teamcode.utils.SuperStructure.ProfiledSuperStructure;
+import org.firstinspires.ftc.teamcode.utils.SuperStructure.ProfiledMechanismSet;
 import org.firstinspires.ftc.teamcode.utils.SuperStructure.ServoEx;
 
 public class SuperStructureSubsystem extends SubsystemBase {
     private final LinearMotion extend, elevator;
-    private final ProfiledSuperStructure superStructure;
+    private final ProfiledMechanismSet superStructure;
     private final Servo intakeRotate, intakeClaw, armClaw;
     private boolean intakeClawClosed, armClawClosed;
     private double intakeRotAngle = 0.0;
@@ -54,7 +54,7 @@ public class SuperStructureSubsystem extends SubsystemBase {
                 new ServoEx(hardwareMap.get(Servo.class, "armFlip")),
                 0.8,
                 0.05);
-        this.superStructure = new ProfiledSuperStructure(
+        this.superStructure = new ProfiledMechanismSet(
                 new ProfiledMechanism[]{
                         new ProfiledMechanism(extend, 1.2, 0),
                         intakeBase, intakeFlip,
@@ -145,5 +145,4 @@ public class SuperStructureSubsystem extends SubsystemBase {
                 new InstantCommand(),
                 () -> armClawClosed);
     }
-
 }
