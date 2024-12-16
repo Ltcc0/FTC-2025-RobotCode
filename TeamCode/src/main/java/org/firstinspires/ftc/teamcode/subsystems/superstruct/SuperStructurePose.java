@@ -86,7 +86,7 @@ public class SuperStructurePose implements Cloneable {
 
     public static final SuperStructurePose PREPARE_TO_PASS = new SuperStructurePose(
             0,
-            0.5, 0.88,
+            0.54, 0.92,
             0,
             0.05);
 
@@ -102,4 +102,10 @@ public class SuperStructurePose implements Cloneable {
             0.5, 0.5,
             1,
             0.95);
+
+    public static final SuperStructurePose SCORE_SPECIMEN = new SuperStructurePose(
+            0,
+            0.5, 0.5,
+            0.62,
+            0.05);
 }

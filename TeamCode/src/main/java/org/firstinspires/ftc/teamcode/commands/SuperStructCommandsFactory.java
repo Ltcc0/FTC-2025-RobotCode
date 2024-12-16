@@ -5,11 +5,13 @@ import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
 
 import org.firstinspires.ftc.teamcode.subsystems.superstruct.SuperStructurePose;
 import org.firstinspires.ftc.teamcode.subsystems.superstruct.SuperStructureSubsystem;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -73,6 +75,7 @@ public class SuperStructCommandsFactory {
 
         sequence.addCommands(holdIntake().alongWith(superStructureSubsystem.openArmClaw()));
 
+        sequence.addCommands(superStructureSubsystem.moveToPose(SuperStructurePose.PREPARE_TO_PASS));
         sequence.addCommands(superStructureSubsystem.moveToPose(SuperStructurePose.PASS));
 
         sequence.addCommands(superStructureSubsystem.closeArmClaw());
@@ -86,7 +89,7 @@ public class SuperStructCommandsFactory {
         return sequence;
     }
 
-    public Command scoreSample(BooleanSupplier scoreButton) {
+    public Command scoreSample(BooleanSupplier scoreButton, BooleanSupplier goForLowBasket, BooleanSupplier goForHighBasket) {
         final SequentialCommandGroup sequence = new SequentialCommandGroup();
         sequence.addRequirements(superStructureSubsystem);
         Command passSampleToArm_ifNoSampleInArm = new ConditionalCommand(
@@ -96,14 +99,37 @@ public class SuperStructCommandsFactory {
         sequence.addCommands(passSampleToArm_ifNoSampleInArm);
 
         sequence.addCommands(superStructureSubsystem.moveToPose(SuperStructurePose.SCORE_SAMPLE));
-        sequence.addCommands(new WaitUntilCommand(scoreButton));
+        AtomicBoolean scoreLowBasket = new AtomicBoolean(false);
+        Command updateLowHighBasketChoice = new RunCommand(() -> {
+            if (goForLowBasket.getAsBoolean())
+                scoreLowBasket.set(true);
+            if (goForHighBasket.getAsBoolean())
+                scoreLowBasket.set(false);
+        });
+        Command stayAtScoringHeight = superStructureSubsystem.follow(() -> SuperStructurePose.SCORE_SAMPLE.withElevatorPosition(
+                scoreLowBasket.get() ? 0.6 : 1));
+        sequence.addCommands(new WaitUntilCommand(scoreButton)
+                .raceWith(updateLowHighBasketChoice)
+                .raceWith(stayAtScoringHeight));
+
         sequence.addCommands(superStructureSubsystem.openArmClaw()
                 .beforeStarting(() -> sampleInArm = false));
 
         return sequence;
     }
 
-//    public Command scoreSpecimen() {
-//
-//    }
+    public Command grabSpecimen() {
+        return superStructureSubsystem.moveToPose(SuperStructurePose.HOLD.withElevatorPosition(0.2));
+    }
+
+    public Command scoreSpecimen(BooleanSupplier scoreButton) {
+        final SequentialCommandGroup sequence = new SequentialCommandGroup();
+        sequence.addCommands(superStructureSubsystem.moveToPose(SuperStructurePose.SCORE_SPECIMEN));
+
+        sequence.addCommands(new WaitUntilCommand(scoreButton));
+
+        sequence.addCommands(superStructureSubsystem.moveToPose(SuperStructurePose.SCORE_SPECIMEN.withElevatorPosition(0.45)));
+
+        return sequence;
+    }
 }

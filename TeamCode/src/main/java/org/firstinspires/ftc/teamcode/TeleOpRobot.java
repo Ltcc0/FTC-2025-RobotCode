@@ -62,19 +62,18 @@ public class TeleOpRobot extends Robot {
                 .whenPressed(robotContainer.superStructCommandsFactory.passSampleToUpperArm());
         this.copilotGamePad.getGamepadButton(GamepadKeys.Button.Y)
                 .whenPressed(robotContainer.superStructCommandsFactory.scoreSample(
-                        () -> copilotGamePad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5));
+                        () -> pilotGamePad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5,
+                        copilotGamePad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)::get,
+                        copilotGamePad.getGamepadButton(GamepadKeys.Button.DPAD_UP)::get));
 
-        // TODO: testing commands, delete them
-        this.pilotGamePad.getGamepadButton(GamepadKeys.Button.B).whenHeld(robotContainer.driveSubsystem.followPath(
-                new Pose2d[]{
-                        new Pose2d(0, 0, Rotation2d.fromDegrees(45)),
-                        new Pose2d(0.5, 0.5, Rotation2d.fromDegrees(90)),
-                        new Pose2d(0.5, 1, Rotation2d.fromDegrees(90))},
-                Rotation2d.fromDegrees(0),
-                0.5));
+        this.pilotGamePad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                robotContainer.superStructCommandsFactory.holdIntake());
+        new Trigger(() -> pilotGamePad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5).whenActive(
+                robotContainer.superStructCommandsFactory.grabSpecimen());
 
-        new Trigger(() -> this.pilotGamePad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
-                .whileActiveOnce(robotContainer.driveSubsystem.driveToPose(() -> new Pose2d(0, 0, Rotation2d.fromDegrees(0)), new Pose2d(0.02, 0.02, Rotation2d.fromDegrees(5)), 2));
+        this.pilotGamePad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
+                robotContainer.superStructCommandsFactory.scoreSpecimen(
+                        () -> pilotGamePad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5));
     }
 
     @Override
