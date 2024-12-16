@@ -7,6 +7,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.constants.SystemConstants;
 import org.firstinspires.ftc.teamcode.utils.SuperStructure.SimpleMechanism;
 
+import java.util.Optional;
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.math.controller.PIDController;
 
 public class LinearMotion implements SimpleMechanism, Subsystem {
@@ -15,12 +18,14 @@ public class LinearMotion implements SimpleMechanism, Subsystem {
     private final DcMotor[] motors;
     private final boolean[] motorsReversed;
     private final DcMotor encoder;
+    private final Optional<BooleanSupplier> optionalLimitSwitch;
     private final boolean encoderReversed;
     private final double maximumExtendingLength;
     private final PIDController controller;
     private final double kG, kV, kS;
 
     private double setPoint;
+    private boolean calibrated = false;
 
     /**
      * A DCMotor driven linear motion
@@ -37,6 +42,7 @@ public class LinearMotion implements SimpleMechanism, Subsystem {
             String name,
             DcMotor[] motors, boolean[] motorsReversed,
             DcMotor encoder, boolean encoderReversed,
+            Optional<BooleanSupplier> optionalLimitSwitch,
             double maximumExtendingLength,
             double kG, double kV, double kP, double kS) {
         this.name = name;
@@ -47,6 +53,8 @@ public class LinearMotion implements SimpleMechanism, Subsystem {
         this.motorsReversed = motorsReversed;
         this.encoder = encoder;
         this.encoderReversed = encoderReversed;
+        this.optionalLimitSwitch = optionalLimitSwitch;
+
         this.maximumExtendingLength = maximumExtendingLength;
         this.controller = new PIDController(kP, 0, 0);
         this.kG = kG;
@@ -63,9 +71,19 @@ public class LinearMotion implements SimpleMechanism, Subsystem {
     }
 
     private double previousSetPoint;
+    private double encoderZeroPosition = 0.0;
     @Override
     public void periodic() {
-        double currentPosition = encoder.getCurrentPosition() * (encoderReversed ? -1:1) / maximumExtendingLength;
+        if (!calibrated && optionalLimitSwitch.isPresent()) {
+            if (optionalLimitSwitch.get().getAsBoolean())
+                calibrated = true;
+            for (int i = 0; i < motors.length; i++)
+                motors[i].setPower(-0.5 * (motorsReversed[i] ? -1:1));
+        }
+        if (optionalLimitSwitch.isPresent() && optionalLimitSwitch.get().getAsBoolean())
+            encoderZeroPosition = encoder.getCurrentPosition();
+
+        double currentPosition =(encoder.getCurrentPosition() - encoderZeroPosition) * (encoderReversed ? -1:1) / maximumExtendingLength;
         double desiredVelocity = (setPoint - previousSetPoint) * SystemConstants.ROBOT_UPDATE_RATE_HZ;
         previousSetPoint = setPoint;
         double feedForwardPower = desiredVelocity * kV
