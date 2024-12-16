@@ -52,7 +52,7 @@ public class TeleOpRobot extends Robot {
 
         this.copilotGamePad.getGamepadButton(GamepadKeys.Button.A)
                 .whenPressed(robotContainer.superStructCommandsFactory.intakeContinuously(
-                        () -> -copilotGamePad.getLeftY(),
+                        copilotGamePad::getLeftY,
                         copilotGamePad::getRightX,
                         copilotGamePad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)::get,
                         () -> copilotGamePad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5));

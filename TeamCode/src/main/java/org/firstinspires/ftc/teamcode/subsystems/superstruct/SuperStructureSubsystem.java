@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.utils.SuperStructure.ProfiledMechanism;
 import org.firstinspires.ftc.teamcode.utils.SuperStructure.ProfiledMechanismSet;
 import org.firstinspires.ftc.teamcode.utils.SuperStructure.ServoEx;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class SuperStructureSubsystem extends SubsystemBase {
@@ -26,6 +27,7 @@ public class SuperStructureSubsystem extends SubsystemBase {
 
     public SuperStructureSubsystem(HardwareMap hardwareMap) {
         this.extend = new LinearMotion(
+                "Extend",
                 new DcMotor[]{hardwareMap.get(DcMotor.class, "extend")},
                 new boolean[] {true},
                 hardwareMap.get(DcMotor.class, "extend"),
@@ -33,18 +35,19 @@ public class SuperStructureSubsystem extends SubsystemBase {
                 2000,
                 0,
                 0.8,
-                5,
-                0.2);
+                7.5,
+                0.4);
         this.elevator = new LinearMotion(
+                "Elevator",
                 new DcMotor[]{hardwareMap.get(DcMotor.class, "elevator1"), hardwareMap.get(DcMotor.class, "elevator2")},
-                new boolean[] {true, false},
-                hardwareMap.get(DcMotor.class, "elevator2"),
+                new boolean[] {false, true},
+                hardwareMap.get(DcMotor.class, "elevator1"),
                 false,
                 700,
-                0.1,
-                0.3,
-                2.5,
-                0.05);
+                0.25,
+                0.6,
+                3,
+                0.15);
         final ProfiledMechanism intakeBase = new ProfiledMechanism(
                 new ServoEx(hardwareMap.get(Servo.class, "intakeBase")),
                 0.6,
@@ -61,8 +64,7 @@ public class SuperStructureSubsystem extends SubsystemBase {
                 new ProfiledMechanism[]{
                         new ProfiledMechanism(extend, 1.5, 0),
                         intakeBase, intakeFlip,
-                        // new ProfiledMechanism(elevator, 0.8, 0),
-                        new ProfiledMechanism(setPoint -> {}, 0.8, 0),
+                        new ProfiledMechanism(elevator, 1, 0),
                         armFlip
                 },
                 SuperStructurePose.HOLD.positions
@@ -99,11 +101,11 @@ public class SuperStructureSubsystem extends SubsystemBase {
     public void periodic() {
         superStructure.update();
         extend.periodic();
-        // elevator.periodic();
+        elevator.periodic();
 
         intakeClaw.setPosition(intakeClawClosed ? 1 : 0);
         armClaw.setPosition(armClawClosed ? 1 : 0);
-        intakeRotate.setPosition(0.55 + intakeRotAngle * 0.5);
+        intakeRotate.setPosition(0.5 + intakeRotAngle * 0.5);
     }
 
     public boolean superStructAtReference() {

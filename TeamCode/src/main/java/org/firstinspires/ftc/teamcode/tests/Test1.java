@@ -66,7 +66,7 @@ public class Test1 extends OpMode {
         intakeRotate.setPosition(intakeRotatePosition);
         double intakeClawPosition = gamepad1.right_trigger;
         intakeClaw.setPosition(intakeClawPosition);
-        double armFlipPosition = gamepad1.left_bumper ? 1 : 0.05;
+        double armFlipPosition = gamepad1.left_bumper ? 1 : 0.08;
         armFlip.setPosition(armFlipPosition);
         double armClawPosition = 1-gamepad1.left_trigger;
         armClaw.setPosition(armClawPosition);

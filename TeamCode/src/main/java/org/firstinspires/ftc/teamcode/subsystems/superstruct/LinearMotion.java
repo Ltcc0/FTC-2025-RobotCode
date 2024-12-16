@@ -10,6 +10,8 @@ import org.firstinspires.ftc.teamcode.utils.SuperStructure.SimpleMechanism;
 import edu.wpi.first.math.controller.PIDController;
 
 public class LinearMotion implements SimpleMechanism, Subsystem {
+    public final String name;
+
     private final DcMotor[] motors;
     private final boolean[] motorsReversed;
     private final DcMotor encoder;
@@ -32,10 +34,13 @@ public class LinearMotion implements SimpleMechanism, Subsystem {
      * @param kS the static gain, or the percent power required to move the mechanism
      * */
     public LinearMotion(
+            String name,
             DcMotor[] motors, boolean[] motorsReversed,
             DcMotor encoder, boolean encoderReversed,
             double maximumExtendingLength,
             double kG, double kV, double kP, double kS) {
+        this.name = name;
+
         assert motors.length == motorsReversed.length
                 : "Motors and reversed list length not equal!";
         this.motors = motors;
@@ -65,18 +70,18 @@ public class LinearMotion implements SimpleMechanism, Subsystem {
         previousSetPoint = setPoint;
         double feedForwardPower = desiredVelocity * kV
                 + Math.signum(desiredVelocity) * kS
-                + kG;
+                + (setPoint == 0 ? 0 : kG);
         double feedBackPower = controller.calculate(currentPosition, setPoint);
 
         for (int i = 0; i < motors.length; i++)
             motors[i].setPower((feedForwardPower + feedBackPower) * (motorsReversed[i] ? -1:1));
 
-        SystemConstants.telemetry.addLine("<-- Linear Motion -->");
-        SystemConstants.telemetry.addData("currentPosition", currentPosition);
-        SystemConstants.telemetry.addData("desiredVelocity", desiredVelocity);
-        SystemConstants.telemetry.addData("setPoint", setPoint);
-        SystemConstants.telemetry.addData("FFPower", feedForwardPower);
-        SystemConstants.telemetry.addData("FBPower", feedBackPower);
+        SystemConstants.telemetry.addLine("<-- " + name + " -->");
+        SystemConstants.telemetry.addData(name + "CurrentPosition", currentPosition);
+        SystemConstants.telemetry.addData(name + "DesiredVelocity", desiredVelocity);
+        SystemConstants.telemetry.addData(name + "SetPoint", setPoint);
+        SystemConstants.telemetry.addData(name + "FFPower", feedForwardPower);
+        SystemConstants.telemetry.addData(name + "FBPower", feedBackPower);
     }
 
     @Override
