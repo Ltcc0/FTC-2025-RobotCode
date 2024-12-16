@@ -120,7 +120,7 @@ public class FollowPathCommand extends CommandBase {
             final Pose2d originalWayPoint = pathWayPoints[pathWayPoints.length -1-i];
             revered[i] = new Pose2d(
                     originalWayPoint.getTranslation(),
-                    originalWayPoint.getRotation().plus(Rotation2d.kCCW_Pi_2));
+                    originalWayPoint.getRotation().plus(Rotation2d.k180deg));
         }
 
         return revered;
