@@ -23,7 +23,7 @@ public class FollowPathCommand extends CommandBase {
 
     private final MapleTimer timer;
 
-    private double timeOutSeconds = Double.POSITIVE_INFINITY;
+    private double timeOutSeconds;
 
     public FollowPathCommand(Trajectory trajectory, HolonomicDriveSubsystem driveSubsystem, Rotation2d desiredRotation) {
         this(trajectory, 1, driveSubsystem, desiredRotation);
@@ -51,6 +51,8 @@ public class FollowPathCommand extends CommandBase {
         this.timer = new MapleTimer();
 
         super.addRequirements(driveSubsystem);
+
+        withTimeOutAfterTrajectoryFinished(1);
     }
 
     @Override
