@@ -10,8 +10,6 @@ import org.firstinspires.ftc.teamcode.subsystems.drive.MecanumDriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.superstruct.SuperStructureSubsystem;
 import org.firstinspires.ftc.teamcode.utils.AllianceSide;
 
-import java.io.IOException;
-
 import edu.wpi.first.math.geometry.Pose2d;
 
 /**
@@ -24,7 +22,7 @@ public final class RobotContainer implements AutoCloseable {
     public final SuperStructureSubsystem superStructureSubsystem;
     public final SuperStructCommandsFactory superStructCommandsFactory;
 
-    public final MapleOdometerWheelsOdometry testOdometry;
+    public final MapleOdometerWheelsOdometry odometry;
 
     // public final AprilTagVision vision;
     /** create all the subsystem with the hardware map */
@@ -32,23 +30,23 @@ public final class RobotContainer implements AutoCloseable {
         this.currentSide = side;
 
         /* here we creates all the subsystems */
-        this.testOdometry = new MapleOdometerWheelsOdometry(hardwareMap, new Pose2d());
-        testOdometry.register();
-        testOdometry.setDefaultCommand(new FunctionalCommand(
+        this.odometry = new MapleOdometerWheelsOdometry(hardwareMap, new Pose2d());
+        odometry.register();
+        odometry.setDefaultCommand(new FunctionalCommand(
                 () -> {},
-                () -> SystemConstants.telemetry.addData("Estimated Pose", testOdometry.getEstimatedPose()),
+                () -> SystemConstants.telemetry.addData("Estimated Pose", odometry.getEstimatedPose()),
                 (Boolean terminated) -> {},
                 () -> false,
-                testOdometry
+                odometry
         ));
 
-        this.driveSubsystem = new MecanumDriveSubsystem(hardwareMap, testOdometry);
+        this.driveSubsystem = new MecanumDriveSubsystem(hardwareMap, odometry);
         this.superStructureSubsystem = new SuperStructureSubsystem(hardwareMap);
         this.superStructCommandsFactory = new SuperStructCommandsFactory(superStructureSubsystem);
     }
 
     @Override
     public void close() throws Exception {
-        testOdometry.close();
+        odometry.close();
     }
 }
