@@ -23,7 +23,7 @@ public class DriveControlLoops {
     public static final double TRANSLATIONAL_LOOK_AHEAD_TIME = 0.25, ROTATIONAL_LOOK_AHEAD_TIME = 0.2;
     public static final double HORIZONTAL_MOVEMENT_COMPENSATION_FACTOR = 1.5;
 
-    public static final Pose2d tolerance = new Pose2d(0.02, 0.02, Rotation2d.fromDegrees(5));
+    public static final Pose2d DEFAULT_TOLERANCE = new Pose2d(0.04, 0.04, Rotation2d.fromDegrees(5));
     public static final TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
             DriveTrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
             5);

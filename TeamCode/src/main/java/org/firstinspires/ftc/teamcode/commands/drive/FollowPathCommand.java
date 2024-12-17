@@ -34,7 +34,7 @@ public class FollowPathCommand extends CommandBase {
     }
 
     public FollowPathCommand(Trajectory trajectory, double speedMultiplier, HolonomicDriveSubsystem driveSubsystem, Rotation2d desiredRotation, double pathProgressPercentageStartRotating) {
-        this(trajectory, speedMultiplier, driveSubsystem, desiredRotation, pathProgressPercentageStartRotating, DriveControlLoops.tolerance);
+        this(trajectory, speedMultiplier, driveSubsystem, desiredRotation, pathProgressPercentageStartRotating, DriveControlLoops.DEFAULT_TOLERANCE);
     }
 
     public FollowPathCommand(Trajectory trajectory, double speedMultiplier, HolonomicDriveSubsystem driveSubsystem, Rotation2d desiredRotation, double pathProgressPercentageStartRotating, Pose2d tolerance) {
