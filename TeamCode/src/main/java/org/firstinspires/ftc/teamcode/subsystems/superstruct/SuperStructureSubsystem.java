@@ -42,15 +42,15 @@ public class SuperStructureSubsystem extends SubsystemBase {
         this.elevator = new LinearMotion(
                 "Elevator",
                 new DcMotor[]{hardwareMap.get(DcMotor.class, "elevator1"), hardwareMap.get(DcMotor.class, "elevator2")},
-                new boolean[] {false, true},
+                new boolean[] {true, false},
                 hardwareMap.get(DcMotor.class, "elevator1"),
-                false,
+                true,
                 Optional.empty(),
                 700,
                 0.25,
                 0.6,
                 3,
-                0.15);
+                0.1);
         final ProfiledMechanism intakeBase = new ProfiledMechanism(
                 new ServoEx(hardwareMap.get(Servo.class, "intakeBase")),
                 0.6,
