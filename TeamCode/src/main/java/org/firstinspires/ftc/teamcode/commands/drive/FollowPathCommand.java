@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.commands.drive;
 
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.arcrobotics.ftclib.command.button.Trigger;
 
 import org.firstinspires.ftc.teamcode.constants.DriveControlLoops;
 import org.firstinspires.ftc.teamcode.subsystems.drive.HolonomicDriveSubsystem;
@@ -80,8 +81,11 @@ public class FollowPathCommand extends CommandBase {
     public boolean isFinished() {
         if (timer.getTimeSeconds() > timeOutSeconds)
             return true;
-        return getPathTime() >= trajectory.getTotalTimeSeconds()
-                && driveController.atReference();
+
+        boolean hasPathFinished = getPathTime() >= trajectory.getTotalTimeSeconds();
+        boolean isChassisMomentary = driveSubsystem.isVelocityBelow(0.05);
+        boolean positionReached = driveController.atReference();
+        return hasPathFinished && isChassisMomentary && positionReached;
     }
 
     @Override
@@ -94,7 +98,7 @@ public class FollowPathCommand extends CommandBase {
     }
 
     public FollowPathCommand withTimeOutAfterTrajectoryFinished(double timeOutAfterFinishSeconds) {
-        this.timeOutSeconds = trajectory.getTotalTimeSeconds() * speedMultiplier + timeOutAfterFinishSeconds;
+        this.timeOutSeconds = trajectory.getTotalTimeSeconds() / speedMultiplier + timeOutAfterFinishSeconds;
         return this;
     }
 

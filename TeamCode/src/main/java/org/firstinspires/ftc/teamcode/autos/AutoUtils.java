@@ -6,10 +6,10 @@ import org.firstinspires.ftc.teamcode.RobotContainer;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
-public class AutoFactory {
+public class AutoUtils {
     public static Command driveForwardWhileScoring(RobotContainer robotContainer) {
         return robotContainer.driveSubsystem.drive(
-                () -> new ChassisSpeeds(0.2, 0, 0),
-                () -> false).withTimeout(200);
+                () -> new ChassisSpeeds(0.3, 0, 0),
+                () -> false).withTimeout(400);
     }
 }

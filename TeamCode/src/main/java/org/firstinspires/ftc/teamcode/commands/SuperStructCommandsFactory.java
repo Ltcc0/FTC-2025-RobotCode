@@ -58,7 +58,6 @@ public class SuperStructCommandsFactory {
         SequentialCommandGroup sequence = new SequentialCommandGroup();
         sequence.addRequirements(superStructureSubsystem);
 
-        sequence.addCommands(new InstantCommand(() -> sampleInArm = false));
         sequence.addCommands(superStructureSubsystem.closeIntakeClaw());
         sequence.addCommands(new ConditionalCommand(
                 superStructureSubsystem.moveToPose(SuperStructurePose.INTAKE_COMPLETE)

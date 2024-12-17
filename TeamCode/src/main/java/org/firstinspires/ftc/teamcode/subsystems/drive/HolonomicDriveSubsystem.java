@@ -137,7 +137,7 @@ public interface HolonomicDriveSubsystem extends Subsystem {
     }
 
     default Command driveToPose(Supplier<Pose2d> target, Pose2d tolerance, double timeOutSeconds) {
-        final Trigger isStationary = isVelocityBelow(0.1);
+        final Trigger isStationary = velocityBelow(0.1);
         return driveToPose(target)
                 .beforeStarting(() -> driveController.setTolerance(tolerance))
                 .beforeStarting(() -> driveController.calculate(getPose(), target.get(), 0, target.get().getRotation()))
@@ -147,14 +147,16 @@ public interface HolonomicDriveSubsystem extends Subsystem {
                 .andThen(new InstantCommand(this::stop));
     }
 
-    default Trigger isVelocityBelow(double velocityPercent) {
-        return new Trigger(() -> {
-            final ChassisSpeeds speeds = getMeasuredChassisSpeedsRobotRelative();
-            return Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond)
-                    < getChassisMaxLinearVelocity() * velocityPercent
-                    && Math.abs(speeds.omegaRadiansPerSecond)
-                    < getChassisMaxAngularVelocity() * velocityPercent;
-        });
+    default boolean isVelocityBelow(double velocityPercent) {
+        final ChassisSpeeds speeds = getMeasuredChassisSpeedsRobotRelative();
+        return Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond)
+                < getChassisMaxLinearVelocity() * velocityPercent
+                && Math.abs(speeds.omegaRadiansPerSecond)
+                < getChassisMaxAngularVelocity() * velocityPercent;
+    }
+
+    default Trigger velocityBelow(double velocityPercent) {
+        return new Trigger(() -> isVelocityBelow(velocityPercent));
     }
 
 
@@ -177,14 +179,17 @@ public interface HolonomicDriveSubsystem extends Subsystem {
                 speedMultiplier,
                 this,
                 desiredRotation,
-                0);
+                0)
+                .whenFinished(this::stop);
     }
 
     default Command followStraightLine(Translation2d startingPoint, Translation2d endingPoint, Rotation2d desiredRotation, double speedMultiplier) {
         Rotation2d direction = endingPoint.minus(startingPoint).getAngle();
 
         return followPath(
-                new Pose2d[] {new Pose2d(startingPoint, direction), new Pose2d(endingPoint, direction)},
+                new Pose2d[] {
+                        new Pose2d(startingPoint, direction),
+                        new Pose2d(endingPoint, direction)},
                 desiredRotation,
                 speedMultiplier);
     }
