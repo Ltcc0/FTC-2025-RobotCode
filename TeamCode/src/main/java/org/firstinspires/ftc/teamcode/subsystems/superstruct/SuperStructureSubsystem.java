@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 public class SuperStructureSubsystem extends SubsystemBase {
+    public static boolean openWide = false;
     public final LinearMotion extend, elevator;
     private final ProfiledMechanismSet superStructure;
     private final Servo intakeRotate, intakeClaw, armClaw;
@@ -105,7 +106,7 @@ public class SuperStructureSubsystem extends SubsystemBase {
         extend.periodic();
         elevator.periodic();
 
-        intakeClaw.setPosition(intakeClawClosed ? 1 : 0);
+        intakeClaw.setPosition(intakeClawClosed ? 1 : (openWide ? 0 : 0.3));
         armClaw.setPosition(armClawClosed ? 1 : 0);
         intakeRotate.setPosition(0.5 + intakeRotAngle * 0.5);
     }

@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.commands.drive.JoystickDriveFactory;
+import org.firstinspires.ftc.teamcode.subsystems.superstruct.SuperStructureSubsystem;
 import org.firstinspires.ftc.teamcode.utils.MapleJoystickDriveInput;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -29,6 +30,7 @@ public class TeleOpRobot extends Robot {
         this.calibrateOdometry = () -> robotContainer.driveSubsystem.setPose(new Pose2d());
         calibrateOdometry.run();
         configureKeyBindings();
+        SuperStructureSubsystem.openWide = false;
     }
 
     private void configureKeyBindings() {

@@ -17,6 +17,8 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.MathUtil;
+
 public class SuperStructCommandsFactory {
     private final SuperStructureSubsystem superStructureSubsystem;
     private boolean sampleInArm = false;
@@ -35,11 +37,13 @@ public class SuperStructCommandsFactory {
         }));
         sequence.addCommands(superStructureSubsystem.moveToPose(SuperStructurePose.PREPARE_TO_INTAKE));
 
-        AtomicReference<Double> extendPosition = new AtomicReference<>(0.5);
+        AtomicReference<Double> extendPosition = new AtomicReference<>(0.0);
         Supplier<SuperStructurePose> intakePose = () ->
                 (pushDownClawButton.getAsBoolean() ? SuperStructurePose.INTAKE : SuperStructurePose.PREPARE_TO_INTAKE)
                         .withExtendPosition(extendPosition.get());
-        Command updateExtendPose = new RunCommand(() -> extendPosition.set(extendPosition.get() + 0.02 * extendSpeed.getAsDouble()));
+        Command updateExtendPose = new RunCommand(() -> extendPosition.set(
+                MathUtil.clamp(extendPosition.get() + 0.02 * extendSpeed.getAsDouble(),
+                0, 1)));
         Command updateRotation = new RunCommand(() -> superStructureSubsystem.setIntakeRotate(intakeRotation.getAsDouble()));
         Command closeClawWhenRequested = new RunCommand(() -> superStructureSubsystem.setIntakeClaw(closeClawButton.getAsBoolean()));
         sequence.addCommands(

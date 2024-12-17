@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.arcrobotics.ftclib.command.Robot;
 
 import org.firstinspires.ftc.teamcode.autos.Auto;
+import org.firstinspires.ftc.teamcode.subsystems.superstruct.SuperStructureSubsystem;
 import org.firstinspires.ftc.teamcode.utils.MapleLoopClock;
 
 /**
@@ -17,6 +18,8 @@ public class AutonomousRobot extends Robot {
         super();
         this.auto = auto;
         this.robotContainer = robotContainer;
+
+        SuperStructureSubsystem.openWide = false;
     }
 
     public void beforeStartPeriodic() {
