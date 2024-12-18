@@ -47,8 +47,8 @@ public class SuperStructureSubsystem extends SubsystemBase {
                 true,
                 Optional.empty(),
                 700,
-                0.25,
-                0.8,
+                0.1,
+                0.6,
                 3.5,
                 0.15);
         final ProfiledMechanism intakeBase = new ProfiledMechanism(

@@ -74,32 +74,39 @@ public class LinearMotion implements SimpleMechanism, Subsystem {
     private double encoderZeroPosition = 0.0;
     @Override
     public void periodic() {
-        if (!calibrated && optionalLimitSwitch.isPresent()) {
-            if (optionalLimitSwitch.get().getAsBoolean())
-                calibrated = true;
-            for (int i = 0; i < motors.length; i++)
-                motors[i].setPower(-0.5 * (motorsReversed[i] ? -1:1));
-        }
+        SystemConstants.telemetry.addLine("<-- " + name + " -->");
+        SystemConstants.telemetry.addData(name + "SetPoint", setPoint);
+
         if (optionalLimitSwitch.isPresent() && optionalLimitSwitch.get().getAsBoolean())
             encoderZeroPosition = encoder.getCurrentPosition();
+        if (optionalLimitSwitch.isPresent() && optionalLimitSwitch.get().getAsBoolean())
+            calibrated = true;
 
         double currentPosition =(encoder.getCurrentPosition() - encoderZeroPosition) * (encoderReversed ? -1:1) / maximumExtendingLength;
         double desiredVelocity = (setPoint - previousSetPoint) * SystemConstants.ROBOT_UPDATE_RATE_HZ;
+        if ((!calibrated && optionalLimitSwitch.isPresent())
+                || (setPoint == 0 && currentPosition > 0.01)) {
+            runPower(-0.4);
+            return;
+        }
+
         previousSetPoint = setPoint;
         double feedForwardPower = desiredVelocity * kV
                 + Math.signum(desiredVelocity) * kS
-                + (setPoint == 0 ? 0 : kG);
+                + kG;
         double feedBackPower = controller.calculate(currentPosition, setPoint);
 
-        for (int i = 0; i < motors.length; i++)
-            motors[i].setPower((feedForwardPower + feedBackPower) * (motorsReversed[i] ? -1:1));
+        runPower(feedForwardPower + feedBackPower);
 
-        SystemConstants.telemetry.addLine("<-- " + name + " -->");
         SystemConstants.telemetry.addData(name + "CurrentPosition", currentPosition);
         SystemConstants.telemetry.addData(name + "DesiredVelocity", desiredVelocity);
-        SystemConstants.telemetry.addData(name + "SetPoint", setPoint);
         SystemConstants.telemetry.addData(name + "FFPower", feedForwardPower);
         SystemConstants.telemetry.addData(name + "FBPower", feedBackPower);
+    }
+
+    private void runPower(double power) {
+        for (int i = 0; i < motors.length; i++)
+            motors[i].setPower((power) * (motorsReversed[i] ? -1:1));
     }
 
     @Override
