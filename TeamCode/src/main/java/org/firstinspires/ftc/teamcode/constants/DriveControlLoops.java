@@ -16,15 +16,15 @@ public class DriveControlLoops {
             3.5, 0, 0,
             new TrapezoidProfile.Constraints(DriveTrainConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, 720));
     public static final HolonomicDriveController driveController = new HolonomicDriveController(
-            new PIDController(3, 0, 0),
-            new PIDController(3, 0, 0),
+            new PIDController(4, 0, 0.1),
+            new PIDController(4, 0, 0.1),
             rotationController);
 
-    public static final double TRANSLATIONAL_LOOK_AHEAD_TIME = 0.15, ROTATIONAL_LOOK_AHEAD_TIME = 0.1;
+    public static final double TRANSLATIONAL_LOOK_AHEAD_TIME = 0, ROTATIONAL_LOOK_AHEAD_TIME = 0;
     public static final double HORIZONTAL_MOVEMENT_COMPENSATION_FACTOR = 1.5;
 
     public static final Pose2d DEFAULT_TOLERANCE = new Pose2d(0.02, 0.02, Rotation2d.fromDegrees(5));
     public static final TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
             DriveTrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
-            8);
+            2.5);
 }
