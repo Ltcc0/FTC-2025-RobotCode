@@ -48,7 +48,7 @@ public class SuperStructureSubsystem extends SubsystemBase {
                 Optional.empty(),
                 700,
                 0.1,
-                0.6,
+                0.5,
                 3.5,
                 0.15);
         final ProfiledMechanism intakeBase = new ProfiledMechanism(
@@ -67,7 +67,7 @@ public class SuperStructureSubsystem extends SubsystemBase {
                 new ProfiledMechanism[]{
                         new ProfiledMechanism(extend, 1.5, 0),
                         intakeBase, intakeFlip,
-                        new ProfiledMechanism(elevator, 1, 0),
+                        new ProfiledMechanism(elevator, 1.2, 0),
                         armFlip
                 },
                 SuperStructurePose.HOLD.positions
