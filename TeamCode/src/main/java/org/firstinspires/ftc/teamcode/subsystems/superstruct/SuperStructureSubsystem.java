@@ -48,9 +48,9 @@ public class SuperStructureSubsystem extends SubsystemBase {
                 Optional.empty(),
                 700,
                 0.25,
-                0.6,
-                3,
-                0.1);
+                0.8,
+                3.5,
+                0.15);
         final ProfiledMechanism intakeBase = new ProfiledMechanism(
                 new ServoEx(hardwareMap.get(Servo.class, "intakeBase")),
                 0.6,

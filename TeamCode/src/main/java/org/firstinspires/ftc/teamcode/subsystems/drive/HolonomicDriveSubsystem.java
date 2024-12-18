@@ -11,7 +11,6 @@ import com.arcrobotics.ftclib.command.button.Trigger;
 
 import org.firstinspires.ftc.teamcode.commands.drive.FollowPathCommand;
 import org.firstinspires.ftc.teamcode.constants.DriveControlLoops;
-import org.firstinspires.ftc.teamcode.constants.DriveTrainConstants;
 import org.firstinspires.ftc.teamcode.constants.SystemConstants;
 
 import java.util.ArrayList;
@@ -24,8 +23,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.spline.Spline;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 
@@ -172,10 +171,13 @@ public interface HolonomicDriveSubsystem extends Subsystem {
     }
 
 
-    default Command followPath(Pose2d[] wayPoints, Rotation2d desiredRotation, double speedMultiplier) {
-        List<Pose2d> wayPointsList = new ArrayList<>(Arrays.asList(wayPoints));
+    default Command followPath(Pose2d startingPoint, Translation2d[] interiorWayPoints, Pose2d endingPoint, Rotation2d desiredRotation, double speedMultiplier) {
         return new FollowPathCommand(
-                TrajectoryGenerator.generateTrajectory(wayPointsList, trajectoryConfig),
+                TrajectoryGenerator.generateTrajectory(
+                        startingPoint,
+                        Arrays.asList(interiorWayPoints),
+                        endingPoint,
+                        trajectoryConfig),
                 speedMultiplier,
                 this,
                 desiredRotation,
@@ -187,9 +189,9 @@ public interface HolonomicDriveSubsystem extends Subsystem {
         Rotation2d direction = endingPoint.minus(startingPoint).getAngle();
 
         return followPath(
-                new Pose2d[] {
-                        new Pose2d(startingPoint, direction),
-                        new Pose2d(endingPoint, direction)},
+                new Pose2d(startingPoint, direction),
+                new Translation2d[]{},
+                new Pose2d(endingPoint, direction),
                 desiredRotation,
                 speedMultiplier);
     }
