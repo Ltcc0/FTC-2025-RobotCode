@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.autos;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.RobotContainer;
 import org.firstinspires.ftc.teamcode.subsystems.superstruct.SuperStructurePose;
@@ -49,29 +50,42 @@ public class OneSpecimenThreeSampleAuto implements Auto {
         sequence.addCommands(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.INTAKE));
         sequence.addCommands(robotContainer.superStructureSubsystem.closeIntakeClaw());
 
-        Command moveToPrepareToScorePosition = robotContainer.driveSubsystem.driveToPose(
-                () -> new Pose2d(0.43, 0.7, Rotation2d.fromDegrees(135)),
-                new Pose2d(0.02, 0.02, Rotation2d.fromDegrees(5)),
-                1);
-        Command prepareToScore = robotContainer.superStructCommandsFactory.passSampleToUpperArm()
-                        .andThen(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.SCORE_SAMPLE));
-        sequence.addCommands(moveToPrepareToScorePosition.alongWith(prepareToScore));
-
-        sequence.addCommands(robotContainer.driveSubsystem.driveToPose(
-                () -> new Pose2d(0.35, 0.78, Rotation2d.fromDegrees(135)),
-                new Pose2d(0.02, 0.02, Rotation2d.fromDegrees(5)),
-                1));
-        sequence.addCommands(robotContainer.superStructureSubsystem.openArmClaw());
+        sequence.addCommands(AutoUtils.driveToBasketAndScoreSample(robotContainer));
 
         // <-- Step3: Score Sample -->
+        Command retrieveArm1 = new WaitCommand(500)
+                .andThen(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.PREPARE_TO_INTAKE));
+        sequence.addCommands(robotContainer.driveSubsystem.driveToPose(
+                () -> new Pose2d(0.6 , 0.71, Rotation2d.k180deg),
+                new Pose2d(0.02, 0.02, Rotation2d.fromDegrees(5)),
+                1)
+                .alongWith(retrieveArm1)
+                .alongWith(robotContainer.superStructureSubsystem.openIntakeClaw()));
 
-        // grab point
-        // 0.6 , 0.71
+        sequence.addCommands(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.INTAKE));
+        sequence.addCommands(robotContainer.superStructureSubsystem.closeIntakeClaw());
+
+        sequence.addCommands(AutoUtils.driveToBasketAndScoreSample(robotContainer));
 
         // Step 4 Score Sample
+        Command retrieveArm2 = new WaitCommand(500)
+                .andThen(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.PREPARE_TO_INTAKE));
+        sequence.addCommands(robotContainer.driveSubsystem.driveToPose(
+                        () -> new Pose2d(0.6, 0.74, Rotation2d.fromDegrees(-150)),
+                        new Pose2d(0.02, 0.02, Rotation2d.fromDegrees(5)),
+                        1)
+                .alongWith(retrieveArm2)
+                .alongWith(robotContainer.superStructureSubsystem.openIntakeClaw())
+                .beforeStarting(() -> robotContainer.superStructureSubsystem.setIntakeRotate(0.3)));
 
-        // 0.6 0.74 (-150 deg) clawrot0.3
+        sequence.addCommands(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.INTAKE));
+        sequence.addCommands(robotContainer.superStructureSubsystem.closeIntakeClaw());
 
+        sequence.addCommands(AutoUtils.driveToBasketAndScoreSample(robotContainer));
+
+        // Step 5: park
+        Command retrieveArm3 = new WaitCommand(500)
+                .andThen(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.PREPARE_TO_INTAKE));
         return sequence;
     }
 }

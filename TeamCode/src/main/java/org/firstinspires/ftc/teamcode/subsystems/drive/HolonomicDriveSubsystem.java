@@ -143,7 +143,7 @@ public interface HolonomicDriveSubsystem extends Subsystem {
                 .raceWith(new WaitUntilCommand(
                         () -> driveController.atReference() && isStationary.get()))
                 .withTimeout((long)(timeOutSeconds * 1000))
-                .andThen(new InstantCommand(this::stop));
+                .whenFinished(this::stop);
     }
 
     default boolean isVelocityBelow(double velocityPercent) {
