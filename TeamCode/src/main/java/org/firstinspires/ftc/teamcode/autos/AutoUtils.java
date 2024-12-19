@@ -17,18 +17,21 @@ public class AutoUtils {
                 () -> false).withTimeout(400);
     }
 
+    public static final Pose2d scoreSamplePose = new Pose2d(0.35, 0.78, Rotation2d.fromDegrees(135));
     public static Command driveToBasketAndScoreSample(RobotContainer robotContainer) {
         final SequentialCommandGroup sequence = new SequentialCommandGroup();
-        Command moveToScoringSample1 = robotContainer.driveSubsystem.driveToPose(
-                () -> new Pose2d(0.35, 0.78, Rotation2d.fromDegrees(135)),
+        Command moveToScoringSample = robotContainer.driveSubsystem.driveToPose(
+                () -> scoreSamplePose,
                 new Pose2d(0.02, 0.02, Rotation2d.fromDegrees(5)),
                 1);
         Command prepareToScore = robotContainer.superStructCommandsFactory.passSampleToUpperArm()
                 .andThen(robotContainer.superStructureSubsystem
-                        .moveToPose(SuperStructurePose.SCORE_SAMPLE.withArmFlipPosition(0.5)));
-        sequence.addCommands(moveToScoringSample1.alongWith(prepareToScore));
+                        .moveToPose(SuperStructurePose.SCORE_SAMPLE.withArmFlipPosition(0.7)));
+        sequence.addCommands(moveToScoringSample.alongWith(prepareToScore));
         sequence.addCommands(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.SCORE_SAMPLE));
         sequence.addCommands(robotContainer.superStructureSubsystem.openArmClaw());
+        sequence.addCommands(robotContainer.superStructureSubsystem
+                .moveToPose(SuperStructurePose.SCORE_SAMPLE.withArmFlipPosition(0.7)));
 
         return sequence;
     }

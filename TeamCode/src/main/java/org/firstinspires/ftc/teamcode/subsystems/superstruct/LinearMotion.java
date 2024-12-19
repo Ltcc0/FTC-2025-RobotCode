@@ -85,7 +85,7 @@ public class LinearMotion implements SimpleMechanism, Subsystem {
         double currentPosition =(encoder.getCurrentPosition() - encoderZeroPosition) * (encoderReversed ? -1:1) / maximumExtendingLength;
         double desiredVelocity = (setPoint - previousSetPoint) * SystemConstants.ROBOT_UPDATE_RATE_HZ;
         if ((!calibrated && optionalLimitSwitch.isPresent())
-                || (setPoint == 0 && currentPosition > 0.01)) {
+                || (setPoint == 0 && currentPosition > 0.03)) {
             runPower(-0.4);
             return;
         }

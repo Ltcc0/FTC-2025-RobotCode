@@ -53,10 +53,11 @@ public class OneSpecimenThreeSampleAuto implements Auto {
         Command prepareToGrab = robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.PREPARE_TO_INTAKE)
                 .andThen(robotContainer.superStructureSubsystem.openIntakeClaw());
         sequence.addCommands(prepareToGrab.alongWith(
-                robotContainer.driveSubsystem.driveToPose(
-                        () -> new Pose2d(0.65, 0.79, Rotation2d.k180deg),
-                        new Pose2d(0.02, 0.02, Rotation2d.fromDegrees(1.2)),
-                        2)));
+                robotContainer.driveSubsystem.followStraightLine(
+                        new Translation2d(0.4, 0.79),
+                        new Translation2d(0.64, 0.79),
+                        Rotation2d.k180deg,
+                        0.5)));
 
         sequence.addCommands(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.INTAKE));
         sequence.addCommands(robotContainer.superStructureSubsystem.closeIntakeClaw());
@@ -66,10 +67,11 @@ public class OneSpecimenThreeSampleAuto implements Auto {
         // <-- Step3: Score Sample -->
         Command retrieveArm1 = new WaitCommand(500)
                 .andThen(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.PREPARE_TO_INTAKE));
-        sequence.addCommands(robotContainer.driveSubsystem.driveToPose(
-                () -> new Pose2d(0.65 , 1.03, Rotation2d.k180deg),
-                new Pose2d(0.02, 0.02, Rotation2d.fromDegrees(1.2)),
-                2)
+        sequence.addCommands(robotContainer.driveSubsystem.followStraightLine(
+                AutoUtils.scoreSamplePose.getTranslation(),
+                new Translation2d(0.64, 1.03),
+                Rotation2d.k180deg,
+                0.5)
                 .alongWith(retrieveArm1)
                 .alongWith(robotContainer.superStructureSubsystem.openIntakeClaw()));
 
@@ -83,10 +85,11 @@ public class OneSpecimenThreeSampleAuto implements Auto {
         Command retrieveArm2 = new WaitCommand(500)
                 .andThen(robotContainer.superStructureSubsystem.moveToPose(
                         SuperStructurePose.PREPARE_TO_INTAKE.withExtendPosition(extendPosition)));
-        sequence.addCommands(robotContainer.driveSubsystem.driveToPose(
-                        () -> new Pose2d(0.63, 1.04, Rotation2d.fromDegrees(-150)),
-                        new Pose2d(0.02, 0.02, Rotation2d.fromDegrees(1.2)),
-                        2)
+        sequence.addCommands(robotContainer.driveSubsystem.followStraightLine(
+                AutoUtils.scoreSamplePose.getTranslation(),
+                new Translation2d(0.63, 1.04),
+                Rotation2d.fromDegrees(-150),
+                0.5)
                 .alongWith(retrieveArm2)
                 .alongWith(robotContainer.superStructureSubsystem.openIntakeClaw())
                 .beforeStarting(() -> robotContainer.superStructureSubsystem.setIntakeRotate(0.3)));
