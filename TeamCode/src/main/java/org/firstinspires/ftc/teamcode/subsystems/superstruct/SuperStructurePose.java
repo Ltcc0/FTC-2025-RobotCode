@@ -68,7 +68,7 @@ public class SuperStructurePose implements Cloneable {
 
     public static final SuperStructurePose INTAKE = new SuperStructurePose(
             0,
-            0.96, 0.06,
+            0.94, 0.05,
             0,
             0);
 

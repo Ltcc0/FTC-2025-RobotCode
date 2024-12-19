@@ -39,13 +39,24 @@ public class OneSpecimenThreeSampleAuto implements Auto {
         // <-- Step2: Score Sample -->
         Command moveToFirstSample = robotContainer.driveSubsystem.followPath(
                 new Pose2d(0.62, -0.25, Rotation2d.k180deg),
-                new Translation2d[]{new Translation2d(0.45, 0.5)},
-                new Pose2d(0.6, 0.8, Rotation2d.kCCW_90deg),
-                Rotation2d.k180deg,
-                0.5);
+                new Translation2d[]{},
+                new Pose2d(0.4, 0.79, Rotation2d.kCCW_90deg),
+                Rotation2d.kZero,
+                0.5)
+                .alongWith(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.HOLD))
+                .andThen(robotContainer.driveSubsystem.driveToPose(
+                        () -> new Pose2d(0.4, 0.79, Rotation2d.k180deg),
+                        new Pose2d(0.02, 0.02, Rotation2d.fromDegrees(1.2)),
+                        2));
+        sequence.addCommands(moveToFirstSample);
+
         Command prepareToGrab = robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.PREPARE_TO_INTAKE)
                 .andThen(robotContainer.superStructureSubsystem.openIntakeClaw());
-        sequence.addCommands(moveToFirstSample.alongWith(prepareToGrab));
+        sequence.addCommands(prepareToGrab.alongWith(
+                robotContainer.driveSubsystem.driveToPose(
+                        () -> new Pose2d(0.65, 0.79, Rotation2d.k180deg),
+                        new Pose2d(0.02, 0.02, Rotation2d.fromDegrees(1.2)),
+                        2)));
 
         sequence.addCommands(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.INTAKE));
         sequence.addCommands(robotContainer.superStructureSubsystem.closeIntakeClaw());
@@ -56,9 +67,9 @@ public class OneSpecimenThreeSampleAuto implements Auto {
         Command retrieveArm1 = new WaitCommand(500)
                 .andThen(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.PREPARE_TO_INTAKE));
         sequence.addCommands(robotContainer.driveSubsystem.driveToPose(
-                () -> new Pose2d(0.6 , 0.71, Rotation2d.k180deg),
-                new Pose2d(0.02, 0.02, Rotation2d.fromDegrees(2)),
-                1)
+                () -> new Pose2d(0.65 , 1.03, Rotation2d.k180deg),
+                new Pose2d(0.02, 0.02, Rotation2d.fromDegrees(1.2)),
+                2)
                 .alongWith(retrieveArm1)
                 .alongWith(robotContainer.superStructureSubsystem.openIntakeClaw()));
 
@@ -68,17 +79,20 @@ public class OneSpecimenThreeSampleAuto implements Auto {
         sequence.addCommands(AutoUtils.driveToBasketAndScoreSample(robotContainer));
 
         // Step 4 Score Sample
+        final double extendPosition = 0.28;
         Command retrieveArm2 = new WaitCommand(500)
-                .andThen(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.PREPARE_TO_INTAKE));
+                .andThen(robotContainer.superStructureSubsystem.moveToPose(
+                        SuperStructurePose.PREPARE_TO_INTAKE.withExtendPosition(extendPosition)));
         sequence.addCommands(robotContainer.driveSubsystem.driveToPose(
-                        () -> new Pose2d(0.6, 0.74, Rotation2d.fromDegrees(-150)),
-                        new Pose2d(0.02, 0.02, Rotation2d.fromDegrees(2)),
-                        1)
+                        () -> new Pose2d(0.63, 1.04, Rotation2d.fromDegrees(-150)),
+                        new Pose2d(0.02, 0.02, Rotation2d.fromDegrees(1.2)),
+                        2)
                 .alongWith(retrieveArm2)
                 .alongWith(robotContainer.superStructureSubsystem.openIntakeClaw())
                 .beforeStarting(() -> robotContainer.superStructureSubsystem.setIntakeRotate(0.3)));
 
-        sequence.addCommands(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.INTAKE));
+        sequence.addCommands(robotContainer.superStructureSubsystem.moveToPose(
+                SuperStructurePose.INTAKE.withExtendPosition(extendPosition)));
         sequence.addCommands(robotContainer.superStructureSubsystem.closeIntakeClaw());
 
         sequence.addCommands(AutoUtils.driveToBasketAndScoreSample(robotContainer));

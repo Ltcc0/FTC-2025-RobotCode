@@ -19,7 +19,7 @@ public class AutonomousRobot extends Robot {
         this.auto = auto;
         this.robotContainer = robotContainer;
 
-        SuperStructureSubsystem.openWide = false;
+        SuperStructureSubsystem.openWide = true;
     }
 
     public void beforeStartPeriodic() {
