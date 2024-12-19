@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.subsystems.superstruct.SuperStructurePose;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class OneSpecimenThreeSampleAuto implements Auto {
     @Override
@@ -102,7 +103,20 @@ public class OneSpecimenThreeSampleAuto implements Auto {
 
         // Step 5: park
         Command retrieveArm3 = new WaitCommand(500)
-                .andThen(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.HOLD.withElevatorPosition(0.5)));
+                .andThen(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.HOLD.withArmFlipPosition(0.5)));
+        Command driveToPark = robotContainer.driveSubsystem.followPath(
+                new Pose2d(AutoUtils.scoreSamplePose.getTranslation(), Rotation2d.kZero),
+                new Translation2d[]{new Translation2d(1.15, 0.8)},
+                new Pose2d(new Translation2d(1.55, 0.2), Rotation2d.kCW_90deg),
+                Rotation2d.kCW_90deg,
+                0.6);
+        sequence.addCommands(driveToPark.alongWith(retrieveArm3));
+
+        sequence.addCommands(robotContainer.superStructureSubsystem
+                .moveToPose(SuperStructurePose.HOLD.withArmFlipPosition(1))
+                .deadlineWith(robotContainer.driveSubsystem.drive(
+                        () -> new ChassisSpeeds(0.2, 0, 0),
+                        () -> false)));
         return sequence;
     }
 }

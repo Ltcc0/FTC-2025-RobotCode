@@ -118,6 +118,7 @@ public class SuperStructCommandsFactory {
         sequence.addCommands(superStructureSubsystem.moveToPose(SuperStructurePose.SCORE_SAMPLE));
         sequence.addCommands(superStructureSubsystem.openArmClaw()
                 .beforeStarting(() -> sampleInArm = false));
+        sequence.addCommands(superStructureSubsystem.moveToPose(SuperStructurePose.SCORE_SAMPLE.withArmFlipPosition(0.5)));
 
         return sequence;
     }
