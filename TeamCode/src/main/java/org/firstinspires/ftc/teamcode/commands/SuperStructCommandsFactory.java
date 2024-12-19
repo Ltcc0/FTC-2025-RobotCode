@@ -5,7 +5,6 @@ import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
 
 import org.firstinspires.ftc.teamcode.subsystems.superstruct.SuperStructurePose;
@@ -101,7 +100,8 @@ public class SuperStructCommandsFactory {
                 () -> sampleInArm);
         sequence.addCommands(passSampleToArm_ifNoSampleInArm);
 
-        sequence.addCommands(superStructureSubsystem.moveToPose(SuperStructurePose.SCORE_SAMPLE));
+        final SuperStructurePose prepareToScore = SuperStructurePose.SCORE_SAMPLE.withArmFlipPosition(0.7);
+        sequence.addCommands(superStructureSubsystem.moveToPose(prepareToScore));
         AtomicBoolean scoreLowBasket = new AtomicBoolean(false);
         Command updateLowHighBasketChoice = new RunCommand(() -> {
             if (goForLowBasket.getAsBoolean())
@@ -109,12 +109,13 @@ public class SuperStructCommandsFactory {
             if (goForHighBasket.getAsBoolean())
                 scoreLowBasket.set(false);
         });
-        Command stayAtScoringHeight = superStructureSubsystem.follow(() -> SuperStructurePose.SCORE_SAMPLE.withElevatorPosition(
+        Command stayAtScoringHeight = superStructureSubsystem.follow(() -> prepareToScore.withElevatorPosition(
                 scoreLowBasket.get() ? 0.6 : 1));
         sequence.addCommands(new WaitUntilCommand(scoreButton)
                 .raceWith(updateLowHighBasketChoice)
                 .raceWith(stayAtScoringHeight));
 
+        sequence.addCommands(superStructureSubsystem.moveToPose(SuperStructurePose.SCORE_SAMPLE));
         sequence.addCommands(superStructureSubsystem.openArmClaw()
                 .beforeStarting(() -> sampleInArm = false));
 
