@@ -14,7 +14,7 @@ public class AutoUtils {
     public static Command driveForwardWhileScoring(RobotContainer robotContainer) {
         return robotContainer.driveSubsystem.drive(
                 () -> new ChassisSpeeds(0.3, 0, 0),
-                () -> false).withTimeout(400);
+                () -> false).withTimeout(300);
     }
 
     public static final Pose2d scoreSamplePose = new Pose2d(0.35, 0.78, Rotation2d.fromDegrees(135));
@@ -28,7 +28,8 @@ public class AutoUtils {
                 .andThen(robotContainer.superStructureSubsystem
                         .moveToPose(SuperStructurePose.SCORE_SAMPLE.withArmFlipPosition(0.7)));
         sequence.addCommands(moveToScoringSample.alongWith(prepareToScore));
-        sequence.addCommands(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.SCORE_SAMPLE));
+        sequence.addCommands(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.SCORE_SAMPLE)
+                .raceWith(driveForwardWhileScoring(robotContainer)));
         sequence.addCommands(robotContainer.superStructureSubsystem.openArmClaw());
         sequence.addCommands(robotContainer.superStructureSubsystem
                 .moveToPose(SuperStructurePose.SCORE_SAMPLE.withArmFlipPosition(0.7)));

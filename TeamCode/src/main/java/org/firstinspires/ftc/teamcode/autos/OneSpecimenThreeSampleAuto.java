@@ -19,9 +19,9 @@ final class Positions {
     public static final Translation2d GRAB_SAMPLE_1_PREPARE = GRAB_SAMPLE_1.plus(new Translation2d(-0.2, 0));
     public static final Translation2d GRAB_SAMPLE_2 = new Translation2d(0.64, 1.03);
 
-    public static final Translation2d GRAB_SAMPLE_3 = new Translation2d(0.62, 1.04);
+    public static final Translation2d GRAB_SAMPLE_3 = new Translation2d(0.6, 1.04);
     public static final Rotation2d GRAB_SAMPLE_3_ROBOT_FACING = Rotation2d.fromDegrees(-150);
-    public static final double GRAB_SAMPLE_3_EXTENSION = 0.28;
+    public static final double GRAB_SAMPLE_3_EXTENSION = 0.34;
     public static final double GRAB_SAMPLE_3_CLAW_ROT = 0.3;
 }
 
