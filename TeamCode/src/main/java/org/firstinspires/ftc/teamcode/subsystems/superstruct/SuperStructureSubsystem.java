@@ -48,9 +48,9 @@ public class SuperStructureSubsystem extends SubsystemBase {
                 Optional.empty(),
                 700,
                 0.1,
-                0.65,
-                3.5,
-                0.15);
+                0.6,
+                5,
+                0.1);
         final ProfiledMechanism intakeBase = new ProfiledMechanism(
                 new ServoEx(hardwareMap.get(Servo.class, "intakeBase")),
                 0.6,
@@ -105,7 +105,7 @@ public class SuperStructureSubsystem extends SubsystemBase {
         elevator.periodic();
 
         intakeClaw.setPosition(intakeClawClosed ? 1 : (openWide ? 0 : 0.3));
-        armClaw.setPosition(armClawClosed ? 1 : 0);
+        armClaw.setPosition(armClawClosed ? 1 : 0.4);
         intakeRotate.setPosition(0.5 + intakeRotAngle * 0.5);
     }
 
@@ -144,7 +144,7 @@ public class SuperStructureSubsystem extends SubsystemBase {
     public Command closeArmClaw() {
         return new ConditionalCommand(
                 new InstantCommand(() -> setArmClaw(true))
-                        .andThen(new WaitCommand(250)),
+                        .andThen(new WaitCommand(200)),
                 new InstantCommand(),
                 () -> !armClawClosed);
     }
@@ -152,7 +152,7 @@ public class SuperStructureSubsystem extends SubsystemBase {
     public Command openArmClaw() {
         return new ConditionalCommand(
                 new InstantCommand(() -> setArmClaw(false))
-                        .andThen(new WaitCommand(250)),
+                        .andThen(new WaitCommand(150)),
                 new InstantCommand(),
                 () -> armClawClosed);
     }
