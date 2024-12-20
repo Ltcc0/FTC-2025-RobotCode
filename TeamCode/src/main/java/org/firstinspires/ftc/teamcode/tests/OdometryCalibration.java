@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.utils.MapleOdometerWheels.MapleEncoder;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
-@TeleOp(name="Odometry Calibration")
+// @TeleOp(name="Odometry Calibration")
 public class OdometryCalibration extends OpMode {
     private final MapleLoopClock clock = new MapleLoopClock(50.0);
     private MapleEncoder leftOdometerWheel, rightOdometerWheel, centerOdometerWheel;

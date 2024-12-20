@@ -106,6 +106,6 @@ public class SuperStructurePose implements Cloneable {
     public static final SuperStructurePose SCORE_SPECIMEN = new SuperStructurePose(
             0,
             0.5, 0.5,
-            0.65,
+            0.68,
             0.05);
 }

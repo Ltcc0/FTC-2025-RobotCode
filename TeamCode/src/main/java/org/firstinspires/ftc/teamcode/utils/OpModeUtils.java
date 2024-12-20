@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.utils;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+//import com.acmerobotics.dashboard.FtcDashboard;
+//import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.Robot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -26,7 +26,8 @@ public class OpModeUtils {
     }
     private static void runOpMode(Robot robot, Runnable waitForStart, BooleanSupplier opModeIsActivated, BooleanSupplier isStopRequested, Telemetry driveStationTelemetry) {
         final MapleLoopClock loopClock = new MapleLoopClock(SystemConstants.ROBOT_UPDATE_RATE_HZ);
-        SystemConstants.telemetry = new MultipleTelemetry(driveStationTelemetry, FtcDashboard.getInstance().getTelemetry());
+        // SystemConstants.telemetry = new MultipleTelemetry(driveStationTelemetry, FtcDashboard.getInstance().getTelemetry());
+        SystemConstants.telemetry = driveStationTelemetry;
 
         waitForStart.run();
 

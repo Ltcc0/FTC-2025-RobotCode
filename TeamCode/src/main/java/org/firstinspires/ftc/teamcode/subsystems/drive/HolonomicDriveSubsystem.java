@@ -187,10 +187,12 @@ public interface HolonomicDriveSubsystem extends Subsystem {
 
     default Command followStraightLine(Translation2d startingPoint, Translation2d endingPoint, Rotation2d desiredRotation, double speedMultiplier) {
         Rotation2d direction = endingPoint.minus(startingPoint).getAngle();
+        Translation2d midPoint = startingPoint.plus(
+                endingPoint.minus(startingPoint).div(2));
 
         return followPath(
                 new Pose2d(startingPoint, direction),
-                new Translation2d[]{},
+                new Translation2d[]{midPoint},
                 new Pose2d(endingPoint, direction),
                 desiredRotation,
                 speedMultiplier);

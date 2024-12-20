@@ -46,9 +46,9 @@ public class SuperStructureSubsystem extends SubsystemBase {
                 hardwareMap.get(DcMotor.class, "elevator1"),
                 true,
                 Optional.empty(),
-                700,
+                600,
                 0.1,
-                0.6,
+                0.4,
                 5,
                 0.1);
         final ProfiledMechanism intakeBase = new ProfiledMechanism(
