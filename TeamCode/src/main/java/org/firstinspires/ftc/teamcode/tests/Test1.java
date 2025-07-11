@@ -12,6 +12,9 @@ public class Test1 extends OpMode {
     private DcMotor elevator1;
     private DcMotor elevator2;
 
+    private DcMotor frontLeft,frontRight,backLeft,backRight;
+
+
     private Servo intakeBase;
     private Servo intakeRotate;
     private Servo intakeClaw;
@@ -30,6 +33,12 @@ public class Test1 extends OpMode {
 
     @Override
     public void init() {
+        frontLeft = hardwareMap.get(DcMotor.class,"frontLeft");
+        frontRight = hardwareMap.get(DcMotor.class,"frontRight");
+        backLeft = hardwareMap.get(DcMotor.class,"backLeft");
+        backRight = hardwareMap.get(DcMotor.class,"backRight");
+
+
         extend = hardwareMap.get(DcMotor.class, "extend");
         elevator1 = hardwareMap.get(DcMotor.class, "elevator1");
         elevator2 = hardwareMap.get(DcMotor.class, "elevator2");
@@ -48,6 +57,14 @@ public class Test1 extends OpMode {
 
     @Override
     public void loop() {
+
+        if(gamepad1.a){
+            frontLeft.setPower(1);
+            frontRight.setPower(1);
+            backLeft.setPower(1);
+            backRight.setPower(1);
+        }
+
         extend.setPower(gamepad2.left_stick_y);
 
         elevator1.setPower(gamepad2.right_stick_y);

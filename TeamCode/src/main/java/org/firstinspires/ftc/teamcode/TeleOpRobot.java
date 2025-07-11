@@ -68,6 +68,7 @@ public class TeleOpRobot extends Robot {
                         copilotGamePad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)::get,
                         copilotGamePad.getGamepadButton(GamepadKeys.Button.DPAD_UP)::get));
 
+        //pilotGamePad's left_trigger to grab, right_trigger to score
         this.pilotGamePad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
                 robotContainer.superStructCommandsFactory.holdIntake());
         new Trigger(() -> pilotGamePad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5).whenActive(
@@ -76,6 +77,7 @@ public class TeleOpRobot extends Robot {
         this.pilotGamePad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 robotContainer.superStructCommandsFactory.scoreSpecimen(
                         () -> pilotGamePad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5));
+
     }
 
     @Override

@@ -13,19 +13,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
- final class  Positions {
-    public static final Translation2d SCORE_PRELOADED_SPECIMEN = new Translation2d(0.62, -0.25);
-    public static final Translation2d GRAB_SAMPLE_1 = new Translation2d(0.64, 0.79);
-    public static final Translation2d GRAB_SAMPLE_1_PREPARE = GRAB_SAMPLE_1.plus(new Translation2d(-0.2, 0));
-    public static final Translation2d GRAB_SAMPLE_2 = new Translation2d(0.64, 1.03);
 
-    public static final Translation2d GRAB_SAMPLE_3 = new Translation2d(0.6, 1.04);
-    public static final Rotation2d GRAB_SAMPLE_3_ROBOT_FACING = Rotation2d.fromDegrees(-150);
-    public static final double GRAB_SAMPLE_3_EXTENSION = 0.34;
-    public static final double GRAB_SAMPLE_3_CLAW_ROT = 0.3;
-}
 
-public class OneSpecimenThreeSampleAuto implements Auto {
+public class ThreeSample implements Auto {
     @Override
     public Command getAutonomousCommands(RobotContainer robotContainer) {
         final SequentialCommandGroup sequence = new SequentialCommandGroup();
@@ -34,32 +24,33 @@ public class OneSpecimenThreeSampleAuto implements Auto {
         // Step 0: Reset Odometry
         sequence.addCommands(new InstantCommand(() -> robotContainer.driveSubsystem.setPose(new Pose2d())));
 
-
-        // <-- Step 1: Score preloaded specimen -->
-        Command driveToScoreSpecimen1 = robotContainer.driveSubsystem.followPath(
+        // <-- Step1: Score Preloaded Sample -->
+        Command moveToPreloadedSample = robotContainer.driveSubsystem.followPath(
                 new Pose2d(0, 0, Rotation2d.fromDegrees(-20)),
-                new Translation2d[]{new Translation2d(0.5, -0.25)},
-                new Pose2d(Positions.SCORE_PRELOADED_SPECIMEN, Rotation2d.kZero),
-                Rotation2d.kZero,
-                0.5)
-                .alongWith(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.SCORE_SPECIMEN))
-                .andThen(AutoUtils.driveForwardWhileScoring(robotContainer));
-        sequence.addCommands(driveToScoreSpecimen1);
-        Command scoreSpecimen1 = AutoUtils.driveForwardWhileScoring(robotContainer)
-                .alongWith(robotContainer.superStructureSubsystem.moveToPose(
-                        SuperStructurePose.SCORE_SPECIMEN.withElevatorPosition(0.5)).alongWith(robotContainer.superStructureSubsystem.openSpecimenClaw()));
-        sequence.addCommands(scoreSpecimen1);
-
-        // <-- Step2: Score Sample -->
-        Command moveToFirstSample = robotContainer.driveSubsystem.followPath(
-                new Pose2d(Positions.SCORE_PRELOADED_SPECIMEN, Rotation2d.k180deg),
                 new Translation2d[]{},
-                new Pose2d(Positions.GRAB_SAMPLE_1_PREPARE, Rotation2d.kCCW_90deg),
+                new Pose2d(org.firstinspires.ftc.teamcode.autos.Positions.GRAB_SAMPLE_1_PREPARE, Rotation2d.kCCW_90deg),
                 Rotation2d.kZero,
                 0.5)
                 .alongWith(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.HOLD))
                 .andThen(robotContainer.driveSubsystem.driveToPose(
-                        () -> new Pose2d(Positions.GRAB_SAMPLE_1_PREPARE, Rotation2d.k180deg),
+                        () -> new Pose2d(org.firstinspires.ftc.teamcode.autos.Positions.GRAB_SAMPLE_1_PREPARE, Rotation2d.k180deg),
+                        new Pose2d(0.02, 0.02, Rotation2d.fromDegrees(1.2)),
+                        2));
+        sequence.addCommands(moveToPreloadedSample);
+
+        sequence.addCommands(AutoUtils.driveToBasketAndScoreSample(robotContainer));
+
+
+        // <-- Step2: Score Sample -->
+        Command moveToFirstSample = robotContainer.driveSubsystem.followPath(
+                        new Pose2d(0.44, 0.79, Rotation2d.k180deg),
+                        new Translation2d[]{},
+                        new Pose2d(org.firstinspires.ftc.teamcode.autos.Positions.GRAB_SAMPLE_1_PREPARE, Rotation2d.kCCW_90deg),
+                        Rotation2d.kZero,
+                        0.5)
+                .alongWith(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.HOLD))
+                .andThen(robotContainer.driveSubsystem.driveToPose(
+                        () -> new Pose2d(org.firstinspires.ftc.teamcode.autos.Positions.GRAB_SAMPLE_1_PREPARE, Rotation2d.k180deg),
                         new Pose2d(0.02, 0.02, Rotation2d.fromDegrees(1.2)),
                         2));
         sequence.addCommands(moveToFirstSample);
@@ -68,8 +59,8 @@ public class OneSpecimenThreeSampleAuto implements Auto {
                 .andThen(robotContainer.superStructureSubsystem.openIntakeClaw());
         sequence.addCommands(prepareToGrab.alongWith(
                 robotContainer.driveSubsystem.followStraightLine(
-                        Positions.GRAB_SAMPLE_1_PREPARE,
-                        Positions.GRAB_SAMPLE_1,
+                        org.firstinspires.ftc.teamcode.autos.Positions.GRAB_SAMPLE_1_PREPARE,
+                        org.firstinspires.ftc.teamcode.autos.Positions.GRAB_SAMPLE_1,
                         Rotation2d.k180deg,
                         0.5)));
 
@@ -82,10 +73,10 @@ public class OneSpecimenThreeSampleAuto implements Auto {
         Command retrieveArm1 = new WaitCommand(500)
                 .andThen(robotContainer.superStructureSubsystem.moveToPose(SuperStructurePose.PREPARE_TO_INTAKE));
         sequence.addCommands(robotContainer.driveSubsystem.followStraightLine(
-                AutoUtils.scoreSamplePose.getTranslation(),
-                Positions.GRAB_SAMPLE_2,
-                Rotation2d.k180deg,
-                0.5)
+                        AutoUtils.scoreSamplePose.getTranslation(),
+                        org.firstinspires.ftc.teamcode.autos.Positions.GRAB_SAMPLE_2,
+                        Rotation2d.k180deg,
+                        0.5)
                 .alongWith(retrieveArm1)
                 .alongWith(robotContainer.superStructureSubsystem.openIntakeClaw()));
 
@@ -94,21 +85,21 @@ public class OneSpecimenThreeSampleAuto implements Auto {
 
         sequence.addCommands(AutoUtils.driveToBasketAndScoreSample(robotContainer));
 
-        // Step 4 Score Sample
+        // <-- Step4: Score Sample -->
         Command retrieveArm2 = new WaitCommand(500)
                 .andThen(robotContainer.superStructureSubsystem.moveToPose(
-                        SuperStructurePose.PREPARE_TO_INTAKE.withExtendPosition(Positions.GRAB_SAMPLE_3_EXTENSION)));
+                        SuperStructurePose.PREPARE_TO_INTAKE.withExtendPosition(org.firstinspires.ftc.teamcode.autos.Positions.GRAB_SAMPLE_3_EXTENSION)));
         sequence.addCommands(robotContainer.driveSubsystem.followStraightLine(
-                AutoUtils.scoreSamplePose.getTranslation(),
-                Positions.GRAB_SAMPLE_3,
-                Positions.GRAB_SAMPLE_3_ROBOT_FACING,
-                0.5)
+                        AutoUtils.scoreSamplePose.getTranslation(),
+                        org.firstinspires.ftc.teamcode.autos.Positions.GRAB_SAMPLE_3,
+                        org.firstinspires.ftc.teamcode.autos.Positions.GRAB_SAMPLE_3_ROBOT_FACING,
+                        0.5)
                 .alongWith(retrieveArm2)
                 .alongWith(robotContainer.superStructureSubsystem.openIntakeClaw())
-                .beforeStarting(() -> robotContainer.superStructureSubsystem.setIntakeRotate(Positions.GRAB_SAMPLE_3_CLAW_ROT)));
+                .beforeStarting(() -> robotContainer.superStructureSubsystem.setIntakeRotate(org.firstinspires.ftc.teamcode.autos.Positions.GRAB_SAMPLE_3_CLAW_ROT)));
 
         sequence.addCommands(robotContainer.superStructureSubsystem.moveToPose(
-                SuperStructurePose.INTAKE.withExtendPosition(Positions.GRAB_SAMPLE_3_EXTENSION)));
+                SuperStructurePose.INTAKE.withExtendPosition(org.firstinspires.ftc.teamcode.autos.Positions.GRAB_SAMPLE_3_EXTENSION)));
         sequence.addCommands(robotContainer.superStructureSubsystem.closeIntakeClaw());
 
         sequence.addCommands(AutoUtils.driveToBasketAndScoreSample(robotContainer));

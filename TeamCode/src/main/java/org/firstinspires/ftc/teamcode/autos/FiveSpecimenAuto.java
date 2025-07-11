@@ -61,7 +61,7 @@ public class FiveSpecimenAuto implements Auto {
         return sequence;
     }
 
-    private static Command pushSpecimenSequence(RobotContainer robotContainer, double specimenYPosition) {
+    static Command pushSpecimenSequence(RobotContainer robotContainer, double specimenYPosition) {
         final SequentialCommandGroup sequence = new SequentialCommandGroup();
 
         sequence.addCommands(robotContainer.driveSubsystem.followStraightLine(

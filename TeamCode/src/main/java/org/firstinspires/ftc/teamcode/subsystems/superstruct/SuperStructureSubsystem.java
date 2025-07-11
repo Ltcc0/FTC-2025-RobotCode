@@ -22,8 +22,8 @@ public class SuperStructureSubsystem extends SubsystemBase {
     public static boolean openWide = false;
     public final LinearMotion extend, elevator;
     private final ProfiledMechanismSet superStructure;
-    private final Servo intakeRotate, intakeClaw, armClaw;
-    private boolean intakeClawClosed, armClawClosed;
+    private final Servo intakeRotate, intakeClaw, armClaw, specimenClaw;
+    private boolean intakeClawClosed, armClawClosed, specimenClawClosed;
     private double intakeRotAngle = 0.0;
 
     public SuperStructureSubsystem(HardwareMap hardwareMap) {
@@ -34,7 +34,7 @@ public class SuperStructureSubsystem extends SubsystemBase {
                 hardwareMap.get(DcMotor.class, "extend"),
                 true,
                 Optional.empty(),
-                1600,
+                1400,  //1600
                 0,
                 0.8,
                 7.5,
@@ -74,9 +74,11 @@ public class SuperStructureSubsystem extends SubsystemBase {
         this.intakeRotate = hardwareMap.get(Servo.class, "intakeRotate");
         this.intakeClaw = hardwareMap.get(Servo.class, "intakeClaw");
         this.armClaw = hardwareMap.get(Servo.class, "armClaw");
+        this.specimenClaw = hardwareMap.get(Servo.class,"specimenClaw");
 
         this.intakeClawClosed = false;
         this.armClawClosed = false;
+        this.specimenClawClosed = false;
     }
 
     public void setIntakeClaw(boolean closed) {
@@ -86,6 +88,8 @@ public class SuperStructureSubsystem extends SubsystemBase {
     public void setArmClaw(boolean closed) {
         this.armClawClosed = closed;
     }
+
+    public void setSpecimenClaw(boolean closed) { this.specimenClawClosed = closed; }
 
     /**
      * @param angle from -1 ~ 1
@@ -106,6 +110,7 @@ public class SuperStructureSubsystem extends SubsystemBase {
 
         intakeClaw.setPosition(intakeClawClosed ? 1 : (openWide ? 0 : 0.3));
         armClaw.setPosition(armClawClosed ? 1 : 0.4);
+        specimenClaw.setPosition(armClawClosed ? 1 : 0.4);
         intakeRotate.setPosition(0.5 + intakeRotAngle * 0.5);
     }
 
@@ -156,4 +161,22 @@ public class SuperStructureSubsystem extends SubsystemBase {
                 new InstantCommand(),
                 () -> armClawClosed);
     }
+
+    public Command closeSpecimenClaw() {
+        return new ConditionalCommand(
+                new InstantCommand(() -> setIntakeClaw(true))
+                        .andThen(new WaitCommand(250)),
+                new InstantCommand(),
+                () -> !specimenClawClosed);
+    }
+
+    public Command openSpecimenClaw(){
+        return new ConditionalCommand(
+                new InstantCommand(() -> setIntakeClaw(false))
+                        .andThen(new WaitCommand(250)),
+                new InstantCommand(),
+                () -> specimenClawClosed);
+    }
+
+
 }

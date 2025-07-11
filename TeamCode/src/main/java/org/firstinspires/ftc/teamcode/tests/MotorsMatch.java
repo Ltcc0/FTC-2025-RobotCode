@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-// @TeleOp(name = "MotorsMatch")
+//@TeleOp(name = "MotorsMatch")
 public class MotorsMatch extends OpMode {
     private DcMotor mot0, mot1, mot2, mot3;
 

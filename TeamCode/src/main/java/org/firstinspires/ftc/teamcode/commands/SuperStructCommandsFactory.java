@@ -130,7 +130,14 @@ public class SuperStructCommandsFactory {
     }
 
     public Command grabSpecimen() {
-        return superStructureSubsystem.moveToPose(SuperStructurePose.HOLD.withElevatorPosition(0.2));
+        final SequentialCommandGroup sequence = new SequentialCommandGroup();
+        sequence.addCommands(superStructureSubsystem.moveToPose(SuperStructurePose.HOLD.withElevatorPosition(0.2)));
+
+        sequence.addCommands(superStructureSubsystem.openSpecimenClaw());
+
+        sequence.addCommands(superStructureSubsystem.closeSpecimenClaw());
+
+        return sequence;
     }
 
     public Command scoreSpecimen(BooleanSupplier scoreButton) {
@@ -141,6 +148,9 @@ public class SuperStructCommandsFactory {
 
         sequence.addCommands(superStructureSubsystem.moveToPose(SuperStructurePose.SCORE_SPECIMEN.withElevatorPosition(0.45)));
 
+        sequence.addCommands(superStructureSubsystem.openSpecimenClaw());
+
         return sequence;
     }
+
 }
